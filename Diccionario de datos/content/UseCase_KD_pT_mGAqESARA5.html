@@ -101,8 +101,8 @@ Properties			</td>
 <span class="TableContent Documentation"><head>
     
   </head>
-  <body style="margin-right:0;color:#000000;font-weight:normal;margin-left:0;font-size:12px;font-family:Dialog;">
-    <p style="margin-right:0pt;margin-left:0pt;margin-top:0pt;margin-bottom:.0001pt;">
+  <body style="color:#000000;font-weight:normal;margin-left:0;font-size:12px;font-family:Dialog;margin-right:0;">
+    <p style="margin-bottom:.0001pt;margin-left:0pt;margin-right:0pt;margin-top:0pt;">
       <span data-path-to-node="3,6,1,0,0">El caso de uso permite a un usuario 
       autenticado guardar o eliminar una rutina/clase deportiva dentro de su 
       lista personal de favoritos para agilizar su consulta y permitir una 
@@ -545,31 +545,61 @@ Scenario			</td>
 			<td class="TableCellSpaceHolder10Px">
 			</td>
 			<td>
-<span class="TableContent"><span class="FoeIndex">1.</span> El usuario visualiza el detalle o la lista de clases/rutinas disponibles.  </span>			</td>
+<span class="TableContent"><span class="FoeIndex">1.</span> El usuario selecciona el icono en la pantalla con el logo de una mancuerna.</span>			</td>
 		</tr>
 		<tr class="TableRow2">
 			<td class="TableCellSpaceHolder10Px">
 			</td>
 			<td>
-<span class="TableContent"><span class="FoeIndex">2.</span> El usuario selecciona la opción "Guardar en Favoritos" (icono de marcadores o estrella).  </span>			</td>
+<span class="TableContent"><span class="FoeIndex">2.</span> El sistema despliega una lista de opciones de navegacion.</span>			</td>
 		</tr>
 		<tr class="TableRow1">
 			<td class="TableCellSpaceHolder10Px">
 			</td>
 			<td>
-<span class="TableContent"><span class="FoeIndex">3.</span> El sistema valida la autenticación activa del usuario.  </span>			</td>
+<span class="TableContent"><span class="FoeIndex">3.</span> El usuario selecciona la opcion Rutinas de entrenamiento.</span>			</td>
 		</tr>
 		<tr class="TableRow2">
 			<td class="TableCellSpaceHolder10Px">
 			</td>
 			<td>
-<span class="TableContent"><span class="FoeIndex">4.</span> El sistema almacena la rutina dentro de la lista de favoritos del usuario en la base de datos.  </span>			</td>
+<span class="TableContent"><span class="FoeIndex">4.</span> El sistema carga el modulo de Rutinas de entrenamiento.</span>			</td>
 		</tr>
 		<tr class="TableRow1">
 			<td class="TableCellSpaceHolder10Px">
 			</td>
 			<td>
-<span class="TableContent"><span class="FoeIndex">5.</span> El sistema confirma la acción mediante una notificación en pantalla y cambia el estado del botón a "Guardado".</span>			</td>
+<span class="TableContent"><span class="FoeIndex">5.</span> El usuario selecciona la rutina de entrenamiento que desee visualiza.</span>			</td>
+		</tr>
+		<tr class="TableRow2">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+<span class="TableContent"><span class="FoeIndex">6.</span> El usuario desliza hacia abajo por la pantalla.  </span>			</td>
+		</tr>
+		<tr class="TableRow1">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+<span class="TableContent"><span class="FoeIndex">7.</span> El usuario selecciona la opción "Guardar en Favoritos" (icono de marcadores o estrella).  </span>			</td>
+		</tr>
+		<tr class="TableRow2">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+<span class="TableContent"><span class="FoeIndex">8.</span> El sistema valida la autenticación activa del usuario.  </span>			</td>
+		</tr>
+		<tr class="TableRow1">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+<span class="TableContent"><span class="FoeIndex">9.</span> El sistema almacena la rutina dentro de la lista de favoritos del usuario en la base de datos.  </span>			</td>
+		</tr>
+		<tr class="TableRow2">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+<span class="TableContent"><span class="FoeIndex">10.</span> El sistema confirma la acción mediante una notificación en pantalla y cambia el estado del botón a "Guardado".</span>			</td>
 		</tr>
 	</table>
 	<table border="0" cellpadding="0" width="100%" cellspacing="0">
@@ -699,6 +729,112 @@ La rutina/clase debe existir y estar registrada en el sistema.</span>			</td>
 			</td>
 			<td>
 <span class="TableContent">La base de datos admite la relación entre los usuarios y sus rutinas preferidas.  </span>			</td>
+		</tr>
+	</table>
+	<table border="0" cellpadding="0" width="100%" cellspacing="0">
+		<tr>
+			<td class="TableCellSpaceHolder1PxTall">
+			</td>
+		</tr>
+		<tr>
+			<td class="TableFooter">
+			</td>
+		</tr>
+	</table>
+	<p>
+	</p>
+	<table border="0" cellpadding="0" width="100%" cellspacing="0">
+		<tr>
+			<td class="Category">
+References			</td>
+		</tr>
+		<tr>
+			<td class="TableCellSpaceHolder5PxTall">
+			</td>
+		</tr>
+	</table>
+	<table border="0" cellpadding="0" width="100%" cellspacing="0">
+		<tr>
+			<td colSpan="4" class="TableHeaderLine">
+			</td>
+		</tr>
+		<tr>
+			<td colSpan="4" class="TableHeaderLine1">
+			</td>
+		</tr>
+		<tr class="TableHeader">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td width="25%">
+<span class="TableHeaderText">File Name</span>			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableHeaderText">Description</span>			</td>
+		</tr>
+		<tr>
+			<td colSpan="4" class="TableHeaderLine2">
+			</td>
+		</tr>
+		<tr class="TableRow1">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+				<span class="TableContent">
+<a href="file:///C:/Users/Sena/Downloads/Mockup Guardar rutinas en fav.png" class="ItemLink" target="_blank">file:///C:/Users/Sena/Downloads/Mockup Guardar rutinas en fav.png</a>				</span>
+			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableContent"></span>			</td>
+		</tr>
+		<tr class="TableRow2">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+				<span class="TableContent">
+<a href="https://drive.google.com/file/d/1J0OY3uj0fI2S8mdOtlbkNKgsYEfVDUZ5/view?usp=drive_link" class="ItemLink" target="_blank">Icono de despliegue</a>				</span>
+			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableContent"></span>			</td>
+		</tr>
+		<tr class="TableRow1">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+				<span class="TableContent">
+<a href="https://drive.google.com/file/d/1PzrEt2G5x_In9WN4riOTDtTIEHgr5J1a/view?usp=drive_link" class="ItemLink" target="_blank">Lista navegacion</a>				</span>
+			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableContent"></span>			</td>
+		</tr>
+		<tr class="TableRow2">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+				<span class="TableContent">
+<a href="https://drive.google.com/file/d/1-Hf7NAYrdV_DVtUx8CcUOe_i_F08YzDw/view?usp=drive_link" class="ItemLink" target="_blank">Mockup consulta de rutinas</a>				</span>
+			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableContent"></span>			</td>
+		</tr>
+		<tr class="TableRow1">
+			<td class="TableCellSpaceHolder10Px">
+			</td>
+			<td>
+				<span class="TableContent">
+<a href="https://drive.google.com/file/d/1bTPyljBIQnGHCXTaKl4C4tLLevcHDFFa/view?usp=drive_link" class="ItemLink" target="_blank">Mockup Guardar rutinas en fav</a>				</span>
+			</td>
+			<td class="TableCellSpaceHolder20Px">
+			</td>
+			<td>
+<span class="TableContent"></span>			</td>
 		</tr>
 	</table>
 	<table border="0" cellpadding="0" width="100%" cellspacing="0">
