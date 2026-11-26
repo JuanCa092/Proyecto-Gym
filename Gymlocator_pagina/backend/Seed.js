@@ -1,19 +1,22 @@
 /**
  * Seed de GYMLOCATOR.
  *
- * La estructura de la base de datos (tablas, procedimientos, triggers, vistas
- * y datos iniciales) se crea importando gimnasio_db.sql en phpMyAdmin.
- * Este script solo garantiza que exista la cuenta de administrador:
- *   1. Busca en la tabla Administrador el correo SEED_ADMIN_EMAIL.
- *   2. Si no existe, crea el perfil del administrador.
- *   3. Si el perfil no tiene cuenta en la tabla Usuario, la crea llamando a
- *      sp_registrar_usuario (el salt y el hash SHA2 los genera la base de datos).
+ * La estructura de la base de datos (tablas usuarios, roles, usuario_roles, etc.)
+ * se crea importando el archivo SQL de gimnasio_db en phpMyAdmin. Ese archivo
+ * no trae datos, así que este script se encarga de lo mínimo para poder entrar:
+ *   1. Crea los roles ADMIN, ENTRENADOR y CLIENTE si no existen.
+ *   2. Crea el usuario administrador definido en .env (contraseña con bcrypt).
+ *   3. Le asigna el rol ADMIN en usuario_roles.
  *
- * Es idempotente: si el administrador ya tiene cuenta, no cambia nada.
+ * Es idempotente: se puede ejecutar varias veces sin duplicar nada y nunca
+ * modifica la contraseña de un usuario que ya existe.
  */
 
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+const bcrypt = require('bcryptjs');
+
+const ROLES = ['ADMIN', 'ENTRENADOR', 'CLIENTE'];
 
 async function seed() {
   const {
@@ -26,7 +29,6 @@ async function seed() {
     SEED_ADMIN_APELLIDO = 'Principal',
     SEED_ADMIN_EMAIL,
     SEED_ADMIN_PASSWORD,
-    SEED_ADMIN_USUARIO,                      // opcional: por defecto, la parte del correo antes de la @
     SEED_ADMIN_TIPO_DOC = 'CC',
     SEED_ADMIN_NUM_DOC = '1000000001',
     SEED_ADMIN_TELEFONO = '3000000001',
@@ -37,10 +39,9 @@ async function seed() {
     process.exit(1);
   }
 
-  const correo = SEED_ADMIN_EMAIL.trim().toLowerCase();
-  const nombreUsuario = (SEED_ADMIN_USUARIO || correo.split('@')[0]).trim();
+  const email = SEED_ADMIN_EMAIL.trim().toLowerCase();
 
-  // Nos conectamos directamente a la base: debe existir (se crea con gimnasio_db.sql)
+  // Nos conectamos directamente a la base: debe existir con sus tablas ya creadas
   const conexion = await mysql.createConnection({
     host: DB_HOST,
     port: Number(DB_PORT),
@@ -50,63 +51,63 @@ async function seed() {
   });
 
   try {
-    // 1. ¿Ya existe el perfil del administrador y su cuenta?
-    const [filas] = await conexion.query(
-      `SELECT a.admin_id, u.id_usuario, u.nombre_usuario
-         FROM Administrador a
-         LEFT JOIN Usuario u ON u.admin_id = a.admin_id
-        WHERE a.correo = ?
-        LIMIT 1`,
-      [correo]
-    );
-    const existente = filas[0];
-
-    if (existente && existente.id_usuario) {
-      console.log(
-        `El administrador ${correo} ya tiene cuenta (usuario "${existente.nombre_usuario}"). No se hicieron cambios.`
-      );
-      return;
-    }
-
-    // 2. Crear perfil (si hace falta) y cuenta en una sola transacción
     await conexion.beginTransaction();
-    try {
-      let adminId;
 
-      if (existente) {
-        adminId = existente.admin_id;
-      } else {
-        const [resultado] = await conexion.query(
-          `INSERT INTO Administrador (nom_admin, apel_admin, tipo_doc, num_doc, correo, telefono)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [SEED_ADMIN_NOMBRE, SEED_ADMIN_APELLIDO, SEED_ADMIN_TIPO_DOC, SEED_ADMIN_NUM_DOC, correo, SEED_ADMIN_TELEFONO]
-        );
-        adminId = resultado.insertId;
+    try {
+      // 1. Roles base (INSERT IGNORE respeta el índice único de roles.nombre)
+      for (const rol of ROLES) {
+        await conexion.query('INSERT IGNORE INTO roles (nombre) VALUES (?)', [rol]);
       }
 
-      // La base valida la política de contraseñas y genera salt + hash
-      await conexion.query('CALL sp_registrar_usuario(?, ?, ?, ?)', [
-        nombreUsuario,
-        SEED_ADMIN_PASSWORD,
-        'ADMIN',
-        adminId,
-      ]);
+      const [[rolAdmin]] = await conexion.query('SELECT id_rol FROM roles WHERE nombre = ?', ['ADMIN']);
+
+      // 2. Usuario administrador: se crea solo si el correo no existe
+      const [filas] = await conexion.query('SELECT id_usuario FROM usuarios WHERE email = ? LIMIT 1', [email]);
+
+      let idUsuario;
+      let creado = false;
+
+      if (filas.length > 0) {
+        idUsuario = filas[0].id_usuario;
+      } else {
+        const hash = await bcrypt.hash(SEED_ADMIN_PASSWORD, 10);
+        const [resultado] = await conexion.query(
+          `INSERT INTO usuarios (nombre, apellido, tipo_doc, num_doc, email, telefono, password)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [SEED_ADMIN_NOMBRE, SEED_ADMIN_APELLIDO, SEED_ADMIN_TIPO_DOC, SEED_ADMIN_NUM_DOC, email, SEED_ADMIN_TELEFONO, hash]
+        );
+        idUsuario = resultado.insertId;
+        creado = true;
+      }
+
+      // 3. Asignar el rol ADMIN (no hace nada si ya lo tenía)
+      const [asignacion] = await conexion.query(
+        'INSERT IGNORE INTO usuario_roles (id_usuario, id_rol) VALUES (?, ?)',
+        [idUsuario, rolAdmin.id_rol]
+      );
 
       await conexion.commit();
+
+      console.log(`Roles verificados: ${ROLES.join(', ')}`);
+      if (creado) {
+        console.log(`Administrador creado: ${email}`);
+      } else if (asignacion.affectedRows > 0) {
+        console.log(`El usuario ${email} ya existía; se le asignó el rol ADMIN. Su contraseña no se modificó.`);
+      } else {
+        console.log(`El administrador ${email} ya existe con rol ADMIN. No se hicieron cambios.`);
+      }
     } catch (error) {
       await conexion.rollback();
       throw error;
     }
-
-    console.log(`Administrador creado. Usuario: "${nombreUsuario}" (${correo})`);
   } finally {
     await conexion.end();
   }
 }
 
 seed().catch((error) => {
-  if (['ER_BAD_DB_ERROR', 'ER_NO_SUCH_TABLE', 'ER_SP_DOES_NOT_EXIST'].includes(error.code)) {
-    console.error('La base de datos no está lista. Importa gimnasio_db.sql en phpMyAdmin y vuelve a ejecutar el seed.');
+  if (['ER_BAD_DB_ERROR', 'ER_NO_SUCH_TABLE'].includes(error.code)) {
+    console.error('La base de datos no está lista. Crea gimnasio_db e importa el archivo SQL en phpMyAdmin, y vuelve a ejecutar el seed.');
   } else {
     console.error('Error ejecutando el seed:', error.message);
   }
