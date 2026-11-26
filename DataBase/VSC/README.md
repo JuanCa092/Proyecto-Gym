@@ -53,7 +53,6 @@ React solo se encarga de la interfaz grafica para el resto utilizaremos:
 `npm create vite@latest frontend -- --template react`
 - 3 Entre a la carpeta frontend con `cd frontend` e instale npm `npm install`
 - 4 instale las librerias: `npm install bootstrap bootstrap-icons react-router-dom axios`
---------------------------------------------------------------------------------------------
 - 5  empaquetador optimiza y junta todo el css en un solo archivo al hacer `npm run build`
 - 6 instalar las dependencias del backend y frontend al tiempo `npm run install:all`
 --------------------------------------------------------------------------------------------
